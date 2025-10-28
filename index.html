@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Panda - Web Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 开始菜单 -->
+    <div id="menu" class="menu">
+        <div class="menu-content">
+            <h1 class="game-title">🐼 Super Panda</h1>
+            <p class="subtitle">Cute Panda Adventure</p>
+            <div class="menu-buttons">
+                <button id="startBtn" class="menu-btn">Start Game</button>
+                <button id="instructionsBtn" class="menu-btn">Instructions</button>
+            </div>
+            <div id="instructions" class="instructions hidden">
+                <h2>How to Play</h2>
+                <p><strong>Controls:</strong></p>
+                <ul>
+                    <li>⬅️ Arrow Left / A - Move Left</li>
+                    <li>➡️ Arrow Right / D - Move Right</li>
+                    <li>Space / W / ⬆️ - Jump</li>
+                </ul>
+                <p><strong>Objectives:</strong></p>
+                <ul>
+                    <li>🚩 Reach the flag pole to complete level</li>
+                    <li>🎋 Collect bamboo for points</li>
+                    <li>🥟 Eat buns to grow bigger</li>
+                    <li>⭐ Collect stars for invincibility</li>
+                </ul>
+                <p><strong>Tips:</strong></p>
+                <ul>
+                    <li>🐭 Jump on mice to defeat them</li>
+                    <li>⚠️ Avoid falling into pits</li>
+                    <li>❤️ Don't touch mice bodies</li>
+                </ul>
+                <button id="closeInstructions" class="menu-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="gameContainer" class="game-container hidden">
+        <!-- Canvas -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-left">
+                <div class="score-display">
+                    <span class="label">Score</span>
+                    <span class="value" id="scoreValue">0</span>
+                </div>
+                <div class="coins-display">
+                    <span class="label">🎋</span>
+                    <span class="value" id="coinsValue">0</span>
+                </div>
+            </div>
+            <div class="hud-center">
+                <div class="world-display">
+                    <span class="label">WORLD</span>
+                    <span class="value" id="worldValue">1-1</span>
+                </div>
+            </div>
+            <div class="hud-right">
+                <div class="time-display">
+                    <span class="label">Time</span>
+                    <span class="value" id="timeValue">300</span>
+                </div>
+                <div class="lives-display">
+                    <span class="label">Lives</span>
+                    <span class="value" id="livesValue">❤️ × 3</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏结束界面 -->
+        <div id="gameOver" class="game-over hidden">
+            <div class="game-over-content">
+                <h2 id="gameOverTitle">🎮 Game Over</h2>
+                <div class="final-score">
+                    <p>Final Score</p>
+                    <p class="score" id="finalScore">0</p>
+                </div>
+                <div class="stats">
+                    <p>Bamboo Collected: <span id="totalCoins">0</span> 🎋</p>
+                    <p>Mice Defeated: <span id="enemiesKilled">0</span> 🐭</p>
+                </div>
+                <button id="restartBtn" class="menu-btn">Restart</button>
+                <button id="menuBtn" class="menu-btn">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
