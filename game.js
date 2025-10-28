@@ -39,7 +39,16 @@ class SuperMarioGame {
             isInvincible: false,
             direction: 1, // 1: 右, -1: 左
             animationFrame: 0,
-            animationCounter: 0
+            animationCounter: 0,
+            landingCount: 0 // 记录着陆次数
+        };
+        
+        // 着陆消息
+        this.landingMessage = {
+            show: false,
+            opacity: 0,
+            duration: 0,
+            text: ''
         };
         
         // 关卡数据
@@ -222,6 +231,13 @@ class SuperMarioGame {
         this.player.velocityY = 0;
         this.player.isBig = false;
         this.player.isInvincible = false;
+        this.player.landingCount = 0;
+        
+        // 重置着陆消息
+        this.landingMessage.show = false;
+        this.landingMessage.opacity = 0;
+        this.landingMessage.duration = 0;
+        this.landingMessage.text = '';
         
         // 重置摄像机
         this.camera.x = 0;
@@ -314,6 +330,18 @@ class SuperMarioGame {
             }
         });
         
+        // 更新着陆消息
+        if (this.landingMessage.show) {
+            this.landingMessage.duration--;
+            if (this.landingMessage.duration <= 30) {
+                // 最后30帧淡出
+                this.landingMessage.opacity = this.landingMessage.duration / 30;
+            }
+            if (this.landingMessage.duration <= 0) {
+                this.landingMessage.show = false;
+            }
+        }
+        
         // 更新摄像机
         this.updateCamera();
         
@@ -356,6 +384,7 @@ class SuperMarioGame {
         player.y += player.velocityY;
         
         // 碰撞检测 - 平台
+        const wasOnGround = player.onGround;
         player.onGround = false;
         this.platforms.forEach(platform => {
             if (this.checkCollision(player, platform)) {
@@ -364,6 +393,26 @@ class SuperMarioGame {
                     player.y = platform.y - player.height;
                     player.velocityY = 0;
                     player.onGround = true;
+                    
+                    // 检测从空中落地（之前不在地面，现在在地面）
+                    if (!wasOnGround) {
+                        player.landingCount++;
+                        
+                        // 第一次着陆显示 "Emily Coming"
+                        if (player.landingCount === 1) {
+                            this.landingMessage.show = true;
+                            this.landingMessage.opacity = 1;
+                            this.landingMessage.duration = 120; // 显示120帧（约2秒）
+                            this.landingMessage.text = 'Emily Coming';
+                        }
+                        // 第二次着陆显示 "Coming, buddy!"
+                        else if (player.landingCount === 2) {
+                            this.landingMessage.show = true;
+                            this.landingMessage.opacity = 1;
+                            this.landingMessage.duration = 120;
+                            this.landingMessage.text = 'Coming, buddy!';
+                        }
+                    }
                 }
                 // 从下方撞击
                 else if (player.velocityY < 0 && player.y - player.velocityY >= platform.y + platform.height) {
@@ -649,6 +698,31 @@ class SuperMarioGame {
         // 恢复上下文
         this.ctx.restore();
         
+        // 绘制着陆消息（在恢复上下文之后，不受摄像机影响）
+        if (this.landingMessage.show) {
+            this.ctx.save();
+            this.ctx.globalAlpha = this.landingMessage.opacity;
+            
+            // 绘制背景
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            this.ctx.fillRect(this.canvas.width / 2 - 250, this.canvas.height / 2 - 60, 500, 120);
+            
+            // 绘制文字
+            this.ctx.fillStyle = '#FFD700';
+            this.ctx.strokeStyle = '#FF69B4';
+            this.ctx.lineWidth = 4;
+            this.ctx.font = 'bold 60px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            
+            // 文字描边
+            this.ctx.strokeText(this.landingMessage.text, this.canvas.width / 2, this.canvas.height / 2);
+            // 文字填充
+            this.ctx.fillText(this.landingMessage.text, this.canvas.width / 2, this.canvas.height / 2);
+            
+            this.ctx.restore();
+        }
+        
         // 更新HUD
         this.updateHUD();
     }
@@ -909,6 +983,13 @@ class SuperMarioGame {
         const flickering = this.player.isInvincible && Math.floor(Date.now() / 100) % 2 === 0;
         
         if (flickering) return;
+        
+        // 显示熊猫名字 "Emily"
+        this.ctx.fillStyle = '#FF69B4';
+        this.ctx.font = 'bold 12px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'bottom';
+        this.ctx.fillText('Emily', p.x + 16, p.y - 5);
         
         // 熊猫身体
         this.ctx.fillStyle = '#FFFFFF';
